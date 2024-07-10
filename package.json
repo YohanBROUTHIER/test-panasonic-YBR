@@ -1,0 +1,16 @@
+{
+  "name": "test-panasonic-ybr",
+  "version": "1.0.0",
+  "description": "Ce repos contient tout les documents relatif au test dans le dossier './doc/test'.",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "db:create": "psql -U panasonic -d panasonic -f ./data/create.sql",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
