@@ -39,7 +39,7 @@ const [articleListDB, emplacementListDB] = await Promise.all([
 
 //Génère 100 stocks
 const stockList = faker.helpers.multiple(createRandomStock, {
-  count: 50
+  count: 100
 });
 
 // Créer les stock
