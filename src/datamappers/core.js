@@ -1,20 +1,21 @@
-import client from '../helpers/pgClient.js';
+import pool from '../helpers/pgClient.js';
 
 export default class CoreDatamapper {
-  static tableName;
+  static ReadTableName;
+  static WriteTableName;
 
   static async findAll() {
     let query = {
-      text: `SELECT * ${this.tableName}`,
+      text: `SELECT * FROM "${this.ReadTableName}"`,
       values: []
     };
 
-    const result = await client.query(query);
+    const result = await pool.query(query);
     return result.rows;
   }
 
   static async findByPk(id) {
-    const result = await client.query(`SELECT * FROM ${this.tableName} WHERE id = $1`, [id]);
+    const result = await pool.query(`SELECT * FROM ${this.ReadTableName} WHERE id = $1`, [id]);
     return result.rows[0];
   }
 
@@ -25,7 +26,7 @@ export default class CoreDatamapper {
     // Construction de la requête préparé
     const query ={
       text: `
-        INSERT INTO ${this.tableName} (
+        INSERT INTO ${this.WriteTableName} (
           ${propertyList.map(([key,_]) => `"${key}"`).join(", ")}
         ) VALUES (
           ${propertyList.map((_,index) => `$${index + 1}`).join(", ")}
@@ -35,7 +36,7 @@ export default class CoreDatamapper {
     }
 
     // Effectue la requête via le module PG
-    const result = await client.query(query);
+    const result = await pool.query(query);
     
     return result.rows[0];
   }

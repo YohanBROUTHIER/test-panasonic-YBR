@@ -1,6 +1,9 @@
 import pg from 'pg';
 
 // Pool allow multiple connexion, but dont use for secure transaction
-const client = new pg.Pool();
+const pool = new pg.Pool();
 
-export default client;
+// For transaction only
+const client = new pg.Client();
+
+export default pool;
