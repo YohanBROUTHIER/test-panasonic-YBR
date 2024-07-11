@@ -10,10 +10,17 @@ Effectué les commande suivantes dans le TERMINAL :
 1. CREATE DATABASE panasonic OWNER panasonic;
 
 ### Intallation des packages
-npm -i
+npm init
+npm i
 
 ### Creation des tables
 npm run db:create
 
 ### Remplir les tables de fausse données de test
 npm run db:seed
+
+### Test de l'exercice 1
+npm run test:exercice1
+
+### Lance le serveur avec rechargement à chaud
+npm run dev:back

@@ -11,6 +11,7 @@
     "db:create": "psql -U panasonic -d panasonic -f ./data/create.sql",
     "db:seed": "node ./data/seeding.js",
     "db:reset": "npm run db:create && npm run db:seed",
+    "dev:back": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:exercice1": "npm run db:reset && node ./test/exercice1"
   },
@@ -18,11 +19,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "eslint": "^9.6.0",
-    "pg": "^8.12.0"
+    "express": "^4.19.2",
+    "joi": "^17.13.3",
+    "pg": "^8.12.0",
+    "sanitize-html": "^2.13.0",
+    "url-query-json-parser": "^1.0.6"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1"
+    "@faker-js/faker": "^8.4.1",
+    "nodemon": "^3.1.4"
   }
 }
