@@ -1,9 +1,11 @@
 import pool from '../helpers/pgClient.js';
 
+// Classe servant de fabrique pour tout les datamappers. Il n'est pas utilisé directement.
 export default class CoreDatamapper {
   static ReadTableName;
   static WriteTableName;
 
+  // Méthode permetant la récupération de tout les élements d'une table.
   static async findAll() {
     let query = {
       text: `SELECT * FROM "${this.ReadTableName}"`,
@@ -14,11 +16,13 @@ export default class CoreDatamapper {
     return result.rows;
   }
 
+  // Méthode permetant de récuper un élément par son ID.
   static async findByPk(id) {
     const result = await pool.query(`SELECT * FROM ${this.ReadTableName} WHERE id = $1`, [id]);
     return result.rows[0];
   }
 
+  // Permet d'effectuer un eregistrement dans la table.
   static async create(data) {
     // Converti un objet en array de tupples [key, value]
     const propertyList = Object.entries(data)

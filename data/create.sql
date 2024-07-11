@@ -61,7 +61,7 @@ CREATE TABLE "achat_ligne"(
   "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "achat_en_tete_id" int NOT NULL REFERENCES "achat_en_tete"("id"),
   "article_id" int NOT NULL REFERENCES "article"("id"),
-  "quantite_commandée" int NOT NULL,
+  "quantite_commande" int NOT NULL,
   "statut" boolean NOT NULL DEFAULT false,
   "prix_unitaire" int NOT NULL,
   "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
