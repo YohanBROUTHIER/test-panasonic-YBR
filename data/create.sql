@@ -1,7 +1,8 @@
 BEGIN;
 
 DROP VIEW IF EXISTS "emplacement_with_stock", "article_global_view";
-DROP TABLE IF EXISTS "emplacement", "article", "stock", "transaction" CASCADE;
+DROP TABLE IF EXISTS "emplacement", "article", "stock", "transaction",
+  "fournisseur", "achat_en_tete", "achat_ligne" CASCADE;
 
 ------------------------------------------ Primaries tables -------------------------------------------------------
 
@@ -38,6 +39,31 @@ CREATE TABLE "transaction"(
   "quantite_mvt" int NOT NULL,
   "emplacement_id" int NOT NULL REFERENCES "emplacement"("id"),
   "description" text,
+  "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
+  "creation_by" text NOT NULL DEFAULT 'admin'
+);
+
+CREATE TABLE "fournisseur"(
+  "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "description" text,
+  "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
+  "creation_by" text NOT NULL DEFAULT 'admin'
+);
+
+CREATE TABLE "achat_en_tete"(
+  "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "fournisseur_id" int NOT NULL REFERENCES "fournisseur"("id"),
+  "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
+  "creation_by" text NOT NULL DEFAULT 'admin'
+);
+
+CREATE TABLE "achat_ligne"(
+  "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "achat_en_tete_id" int NOT NULL REFERENCES "achat_en_tete"("id"),
+  "article_id" int NOT NULL REFERENCES "article"("id"),
+  "quantite_commandée" int NOT NULL,
+  "statut" boolean NOT NULL DEFAULT false,
+  "prix_unitaire" int NOT NULL,
   "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "creation_by" text NOT NULL DEFAULT 'admin'
 );

@@ -13,6 +13,11 @@ const emplacementList = faker.helpers.multiple(createRandomEmplacement, {
   count: 20
 });
 
+//Génère 5 emplacements
+const fournisseurList = faker.helpers.multiple(createRandomFournisseur, {
+  count: 5
+});
+
 // Creation d'une promesse qui sera résolu si tout les articles sont crée
 const createArticles = Promise.all(
   articleList.map(article =>
@@ -31,10 +36,19 @@ const createEmplacements = Promise.all(
   )
 );
 
+const createFournisseur = Promise.all(
+  fournisseurList.map(fournisseur =>
+    new Promise(resolve => {
+      resolve(datamappers.Fournisseur.create(fournisseur))
+    })
+  )
+);
+
 // Parallèlise la créastion des articles et des emplacements
-const [articleListDB, emplacementListDB] = await Promise.all([
+const [articleListDB, emplacementListDB, fournisseurDB] = await Promise.all([
   createArticles,
-  createEmplacements
+  createEmplacements,
+  createFournisseur
 ])
 
 //Génère 100 stocks
@@ -67,6 +81,7 @@ function createRandomEmplacement() {
   };
 }
 
+// Fonction qui créer un stock aléatoire
 function createRandomStock() {
   return {
     emplacement_id: getRandomElement(emplacementListDB).id,
@@ -76,6 +91,14 @@ function createRandomStock() {
   }
 }
 
+// Fonction qui génère un fournisseur aléatoire
+function createRandomFournisseur() {
+  return {
+    description: faker.lorem.sentence({max: 3})
+  };
+}
+
+// Fonction permettant de récupéré un élément aléatoire d'une liste
 function getRandomElement(data) {
   return data[Math.floor(Math.random() * data.length)];
 }
