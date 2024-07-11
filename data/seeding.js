@@ -8,9 +8,9 @@ const articleList = faker.helpers.multiple(createRandomArticle, {
   count: 5
 });
 
-//Génère 20 articles
+//Génère 20 emplacements
 const emplacementList = faker.helpers.multiple(createRandomEmplacement, {
-  count: 50
+  count: 20
 });
 
 // Creation d'une promesse qui sera résolu si tout les articles sont crée
@@ -37,17 +37,16 @@ const [articleListDB, emplacementListDB] = await Promise.all([
   createEmplacements
 ])
 
+//Génère 100 stocks
+const stockList = faker.helpers.multiple(createRandomStock, {
+  count: 50
+});
+
 // Créer les stock
 await Promise.all(
-  emplacementListDB.map(emplacement =>
+  stockList.map(stock =>
     new Promise(resolve => {
-      const newStock = {
-        "emplacement_id": emplacement.id,
-        "article_id": getRandomElement(articleListDB).id,
-        "quantity": 0,
-        "statut_dispo": true
-      };
-      resolve(datamappers.Stock.create(newStock))
+      resolve(datamappers.Stock.create(stock))
     })
   )
 );
@@ -66,6 +65,15 @@ function createRandomEmplacement() {
     description: faker.lorem.sentence(),
     statut_dispo: true
   };
+}
+
+function createRandomStock() {
+  return {
+    emplacement_id: getRandomElement(emplacementListDB).id,
+    article_id: getRandomElement(articleListDB).id,
+    quantity: 0,
+    statut_dispo: true
+  }
 }
 
 function getRandomElement(data) {

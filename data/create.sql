@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS "article"(
 
 CREATE TABLE IF NOT EXISTS "stock"(
   "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "emplacement_id" int NOT NULL UNIQUE REFERENCES "emplacement"("id"),
+  "emplacement_id" int NOT NULL REFERENCES "emplacement"("id"),
   "article_id" int NOT NULL REFERENCES "article"("id"),
   "quantity" text NOT NULL,
   "statut_dispo" boolean NOT NULL,

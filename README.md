@@ -11,3 +11,9 @@ Effectué les commande suivantes dans le TERMINAL :
 
 ### Intallation des packages
 npm -i
+
+### Creation des tables
+npm run db:create
+
+### Remplir les tables de fausse données de test
+npm run db:seed
