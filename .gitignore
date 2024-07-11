@@ -6,7 +6,7 @@ coverage/
 # Files
 .env
 package-lock.json
-.~lock.
+*.odt#
 
 # Logs
 logs

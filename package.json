@@ -2,15 +2,26 @@
   "name": "test-panasonic-ybr",
   "version": "1.0.0",
   "description": "Ce repos contient tout les documents relatif au test dans le dossier './doc/test'.",
+  "type": "module",
   "main": "index.js",
   "directories": {
     "doc": "doc"
   },
   "scripts": {
     "db:create": "psql -U panasonic -d panasonic -f ./data/create.sql",
+    "db:seed": "node ./data/seeding.js",
+    "db:reset": "npm run db:create && npm run db:seed",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "eslint": "^9.6.0",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1"
+  }
 }
