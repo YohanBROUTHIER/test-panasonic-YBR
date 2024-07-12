@@ -19,18 +19,35 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@fontsource/roboto": "^5.0.13",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/material": "^5.15.20",
+    "@mui/x-tree-view": "^7.7.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "eslint": "^9.6.0",
     "express": "^4.19.2",
     "joi": "^17.13.3",
     "pg": "^8.12.0",
     "sanitize-html": "^2.13.0",
     "url-query-json-parser": "^1.0.6",
-    "vite": "^5.3.3"
+    "vite": "^5.3.3",
+    "@vitejs/plugin-react": "^4.2.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "eslint": "^8.54.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "react": "^18.2.0",
+    "react-router-dom": "^6.22.0",
+    "react-toastify": "^10.0.5"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   }
 }
