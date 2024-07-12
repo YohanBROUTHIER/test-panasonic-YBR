@@ -10,12 +10,29 @@
       "ecmaVersion": 2022,
       "sourceType": "module"
     },
+    "plugins": [
+      "jest",
+      "react-refresh"
+    ],
     "extends": [
-      "eslint:recommended"
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:react/jsx-runtime",
+      "plugin:react-hooks/recommended"
     ],
     "rules": {
       "indent": ["error", 2],
-      "semi": ["error", "always"]
+      "semi": ["error", "always"],
+      "jest/no-disabled-tests": "warn",
+      "jest/no-focused-tests": "error",
+      "jest/no-identical-title": "error",
+      "jest/prefer-to-have-length": "warn",
+      "jest/valid-expect": "error",
+      "react-refresh/only-export-components": [
+        "warn",
+        { "allowConstantExport": true },
+      ]
     },
-    "ignorePatterns": ["dist"]
+    "ignorePatterns": ["dist"],
+    "settings": { "react": { "version": "18.2" } }
   }
