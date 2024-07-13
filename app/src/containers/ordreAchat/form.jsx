@@ -6,6 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from "dayjs";
+import OrdreAchatAction from "../../actions/ordreAchat";
 
 // Liste des colones pour les lignes d'achats.
 // Le format a respecté est [label, reqProperty, typeImput, loaderDataName]
@@ -57,7 +58,7 @@ export default function Event() {
   function updateLigne(index, fieldName) {
     return (event) => {
       const updatedLigne = [...achatLigneRow];
-      console.dir(event);
+
       let value = event.target.value;
       if (fieldName !== "description" && fieldName !== "unite_commande") {
         value = Math.round(parseInt(value));
@@ -74,6 +75,17 @@ export default function Event() {
   const isSubmitable = !!fournisseur && achatLigneRow.length > 0 && !achatLigneRow.some(row => 
     Object.values(row).some(cell => cell === '')
   );
+
+  function submitOnClick() {
+    const formData = new FormData(formRef.current);
+    const body = OrdreAchatAction.parseFormData(formData);
+    body["lignes"] = achatLigneRow;
+    submit(body, {
+      method: !achat ? "POST" : "PATCH",
+      action: !achat ? "../" : `./${achat.id}`,
+      encType: "application/json"
+    });
+  }
 
   return(
     <>
@@ -124,8 +136,6 @@ export default function Event() {
                         <TableCell key={index + reqProperty} >
                           {typeImput === "select" &&
                             <Select
-                              id={`${index}-${reqProperty}`}
-                              name={reqProperty}
                               value={achatLigneRow[index][reqProperty]}
                               onChange={updateLigne(index, reqProperty)}
                               required
@@ -148,7 +158,6 @@ export default function Event() {
                           {typeImput !== "select" && typeImput !== "date" &&
                             <Input
                               type={typeImput}
-                              name={reqProperty}
                               value={achatLigneRow[index][reqProperty]}
                               onChange={updateLigne(index, reqProperty)}
                               fullWidth
@@ -197,7 +206,7 @@ export default function Event() {
             color="primary"
             aria-label="submit"
             type="submit"
-            onClick={() => submit(formRef.current)}
+            onClick={submitOnClick}
             disabled={isSubmitable ? false : true}
           >
             <DoneIcon />

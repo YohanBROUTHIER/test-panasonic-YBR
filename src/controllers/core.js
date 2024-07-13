@@ -8,8 +8,8 @@ export default class CoreController {
   
   // Méthode pour la création d'un enregistrement
   static async create(req, res) {
-    this.schema.createBody.validateAsync(req.body)
-    const row = await this.datamapper.create(data);
+    await this.schema.createBody.validateAsync(req.body);
+    const row = await this.datamapper.create(req.body);
     res.status(201).json(row);
   }
   

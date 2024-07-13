@@ -5,14 +5,10 @@ export default class CoreApi {
   static routeName;
 
   // Méthode pour les requête de creation d'un élement.
-  static async create(data) {
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    
+  static async create(data) {    
     const httpResponse = await fetch(`${apiBaseUrl}/${this.routeName}`, {
       method: "POST",
-      headers,
-      mode: "cors",
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(data)
     });
 
@@ -23,13 +19,7 @@ export default class CoreApi {
 
   // Méthode pour les requête de récupération d'un élement par id.
   static async get(id) {
-    const headers = new Headers();
-    
-    const httpResponse = await fetch(`${apiBaseUrl}/${this.routeName}/${id}`, {
-      headers,
-      mode: "cors"
-    });
-
+    const httpResponse = await fetch(`${apiBaseUrl}/${this.routeName}/${id}`);
     await this.errorHandler(httpResponse);
 
     return await httpResponse.json();
@@ -37,17 +27,12 @@ export default class CoreApi {
 
   // Méthode pour les requête de récupération de tout les elements qui respect le filtre.
   static async getAll(query = null) {
-    const headers = new Headers();
-
     let url = `${apiBaseUrl}/${this.routeName}`;
     if (query) {
       url += `?${query}`;
     }
 
-    const httpResponse = await fetch(url, {
-      headers,
-      mode: "cors"
-    });
+    const httpResponse = await fetch(url);
 
     await this.errorHandler(httpResponse);
 
@@ -56,12 +41,9 @@ export default class CoreApi {
 
   // Méthode pour les requête de modification d'un élement.
   static async update(id, data) {
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-
     const httpResponse = await fetch(`${apiBaseUrl}/${this.routeName}/${id}`, {
       method: "PATCH",
-      headers,
+      headers: {"Content-Type": "application/json"},
       mode: "cors",
       body: JSON.stringify(data)
     });
@@ -73,12 +55,9 @@ export default class CoreApi {
 
   // Méthode pour les requête de suppression d'un élement.
   static async delete(id) {
-    const headers = new Headers();
-    headers.append('x-xsrf-token', xsrfToken);
-
     const httpResponse = await fetch(`${apiBaseUrl}/${this.routeName}/${id}`, {
       method: "DELETE",
-      headers,
+      headers: {"Content-Type": "application/json"},
       mode: "cors"
     });
   

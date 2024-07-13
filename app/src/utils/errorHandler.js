@@ -6,6 +6,7 @@ export default function (callback) {
       return await callback(req);
     } catch (err) {
       toast.error(err);
+      console.log(err);
       return {err};
     }
   };

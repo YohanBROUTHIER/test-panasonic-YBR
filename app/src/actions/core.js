@@ -42,6 +42,10 @@ export default class Core {
   static async getFormData(request) {
     const formData = await request.formData();
 
+    return this.parseFormData(formData);
+  }
+
+  static parseFormData(formData) {
     let result = {};
     for (let [key, value] of formData.entries()) {
       if (value === "") {
