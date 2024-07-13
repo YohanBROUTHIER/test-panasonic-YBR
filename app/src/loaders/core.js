@@ -1,4 +1,4 @@
-import api from "../services/api" 
+import api from "../services/api";
 
 export default class Core {
   static apiName;
@@ -6,11 +6,18 @@ export default class Core {
   static otherGetOneList = [];
   static otherGetManyList = [];
 
-  static async one() {
-    const getList = [[this.apiName, this.resultName], ...this.otherGetOneList]
+  static async one({params}) {
+    const getList = this.otherGetOneList;
+
+    if (params.id) {
+      getList.push([this.apiName, this.resultName, params.id]);
+    }
     const results = await Promise.all(
-      this.getList.map(([apiName, _]) =>
-        new Promise((resolve) => resolve(api[apiName].getAll()))
+      getList.map(([apiName, _, id]) =>
+        id ?
+          new Promise((resolve) => resolve(api[apiName].get(id)))
+          :
+          new Promise((resolve) => resolve(api[apiName].getAll()))
       )
     );
 
@@ -24,15 +31,16 @@ export default class Core {
   }
 
   static async many() {
-    const getList = [[this.apiName, this.resultName], ...this.otherGetManyList]
+    const getList = [[this.apiName, this.resultName], ...this.otherGetManyList];
+
     const results = await Promise.all(
-      this.getList.map(([apiName, _]) =>
+      getList.map(([apiName, _]) =>
         new Promise((resolve) => resolve(api[apiName].getAll()))
       )
     );
 
     return results
-      .map((result, index) => [this.getList[index][1], result])
+      .map((result, index) => [getList[index][1], result])
       .reduce((previousValue, [key, value]) => {
         const newResult = previousValue;
         newResult[key] = value;

@@ -1,4 +1,4 @@
-import achatDatamapper from "../../services/api/achatEnTete.js";
+import achatDatamapper from "../services/api/achatEnTete.js";
 import Core from "./core";
 
 export default class OrdreAchat extends Core{

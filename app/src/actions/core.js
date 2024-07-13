@@ -1,7 +1,5 @@
 import { redirect } from "react-router-dom";
-import store from "../../store";
-import types from "../../store/types";
-import { toast } from "../../utils";
+import { AppError, toast } from "../utils";
 
 export default class Core {
   static Datamapper;
@@ -16,7 +14,7 @@ export default class Core {
     case "DELETE": {
       const { id } = params;
       if (!id || !String(id).match(/^[1-9]\d*$/)) {
-        throw new ApiError("Le paramètre dois être un entier positif.", {httpStatus: 400});
+        throw new AppError("Le paramètre dois être un entier positif.", {httpStatus: 400});
       }
     
       await this.Datamapper.delete(params.id);
@@ -60,7 +58,7 @@ export default class Core {
         if (!result[propertyName]) {
           result[propertyName] = [];
         }
-        result[propertyName].push(value)
+        result[propertyName].push(value);
         continue;
       }
 
@@ -92,7 +90,7 @@ export default class Core {
   static async postMethode(request) {
     const data = await this.getFormData(request);
     
-    const dataDB = await this.Datamapper.create(data);
+    await this.Datamapper.create(data);
 
     toast.success(this.toastName + " a été créé avec succès");
     return data;
