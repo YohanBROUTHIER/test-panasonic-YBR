@@ -8,7 +8,9 @@ import { errorHandler as eh } from "../utils/index.js";
 
 // Contient toute la structure des pages de l'application.
 // L'élement App est chargé sur toute les pages contenu dans children.
-// Il contient l'interface
+// Il contient l'interface (header, footer, ...).
+// Les loaders sont executé en chaine correspondant au  path de la requête ayant la méthode GET.
+// Une action est executé pour les requetes qui ont un path correspondant et une methode autre que GET.
 export default createBrowserRouter([
   {
     path: "/",
