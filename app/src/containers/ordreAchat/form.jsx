@@ -1,131 +1,141 @@
-import { useRef } from "react";
-import { useActionData, useLoaderData, useNavigate, useSubmit } from "react-router-dom";
-import { Container, Fab, Grid, Stack } from "@mui/material";
-import { Edit as EditIcon, Done as DoneIcon, Close as CloseIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { useRef, useState } from "react";
+import { Form, useActionData, useLoaderData, useNavigate, useSubmit } from "react-router-dom";
+import { Button, Container, Fab, FormControl, Grid, Input, InputBase, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Add as AddIcon, Edit as EditIcon, Done as DoneIcon, Close as CloseIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 import { timeConvertor } from "../../utils/index.js";
 
-export default function Event({isNew}) {
+const achatLigneColumns = [
+  ["Descritpion", "article_id"],
+  ["Qte commandé", "quantite_commande"],
+  ["Qte receptionné", "quantite_reception"],
+  ["Unité", "unite_commande"],
+  ["Prix unitaire", "prix_unitaire"]
+];
+
+export default function Event() {
   const submit = useSubmit();
   const navigate = useNavigate();
   const formRef = useRef();
   const actionData = useActionData();
   const loaderData = useLoaderData();
 
-  console.log(loaderData)
+  const { achat, fournisseurList, articleList } = loaderData;
+
+  const [achatLigneRow, setAchatLigneRow] = useState(achat?.lignes || []);
+
+  console.log(achatLigneRow);
+
+  function addNewLigne() {
+    const emptyLigne = achatLigneColumns.reduce((previousValue, [_, currentValue]) => {
+      const newValue = {};
+      newValue[currentValue] = "";
+      return {...previousValue, ...newValue};
+    }, {});
+    setAchatLigneRow([...achatLigneRow, emptyLigne]);
+  }
+  function updateLigne(index, fieldName) {
+    return (event) => {
+      const updatedLigne = [...achatLigneRow];
+      let value = event.target.value;
+      if (fieldName !== "description" && fieldName !== "unite_commande") {
+        value = Math.round(parseInt(value));
+        if (isNaN(value)) {
+          return;
+        }
+      }
+
+      updatedLigne[index][fieldName] = value;
+      console.log(updatedLigne);
+      setAchatLigneRow(updatedLigne);
+    };
+  }
 
   return(
     <>
-      <Container component="main" maxWidth="md" sx={{mt: "1rem", ml: "auto", mr: "auto"}}>
-        <Grid
+      <Container component="main" maxWidth="md" sx={{mt: "4rem", ml: "auto", mr: "auto"}}>
+        <Stack
           ref={formRef}
-          container
-          component={"form"}
+          component={Form}
           spacing={2}
-          method={isNew ? "POST" : "PATCH"}
-          action={isNew ? "/event" : `/event/${event.id}`}
+          method={!achat ? "POST" : "PATCH"}
+          action={!achat ? -1 : `./${achat.id}`}
         >
-          {event?.id &&
-            <input type="hidden" name="id" value={event.id} />
-          }
+          {/* L'element select du fournisseur. */}
+          <FormControl fullWidth required>
+            <InputLabel htmlFor="fournisseur">Fournisseur</InputLabel>
+            <Select
+              id="fournisseur"
+              name="fournisseur_id"
+              label="Fournisseur"
+              defaultValue=""
+            >
+              {fournisseurList?.map(fournisseur =>
+                <MenuItem key={fournisseur.id} value={fournisseur.id}>
+                  {fournisseur.description}
+                </MenuItem>
+              )}
+            </Select>
+          </FormControl>
           
+          {/* Affiche la table des ligne d'achat. */}
+          <Table>
+            <TableHead>
+              <TableRow>
+                {achatLigneColumns.map(([columnName]) =>
+                  <TableCell key={columnName} >{columnName}</TableCell>
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {achatLigneRow.map((row, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  {achatLigneColumns.map(([label, propertyName]) => 
+                    <TableCell key={index + propertyName} >
+                      {propertyName === "article_id" ?
+                        <Select
+                          id={`${index}-${propertyName}`}
+                          name={propertyName}
+                          value={achatLigneRow[index][propertyName]}
+                          onChange={updateLigne(index, propertyName)}
+                          required
+                          fullWidth
+                          variant="standard"
+                        >
+                          {articleList.map(article =>
+                            <MenuItem key={article.id} value={article.id}>{article.description}</MenuItem>
+                          )}
+                        </Select>
+                        :
+                        <Input
+                          type={propertyName === "unite_commande" ? "text" : "number"}
+                          name={propertyName}
+                          value={achatLigneRow[index][propertyName]}
+                          onChange={updateLigne(index, propertyName)}
+                          fullWidth
+                          variant="standard"
+                        />
+                      }
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon/>}
+            onClick={addNewLigne}
+            sx={{width: "max-content", alignSelf: "center"}}
+          >
+            {"Ajouter une ligne"}
+          </Button>
+        </Stack>
 
-          {/* <Grid item container xs={12} spacing={2}>
-            <Grid item>
-              <TextField
-                required
-                type="datetime-local"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                id="startDate"
-                label="Début :"
-                name="startDate"
-                value={startDate}
-                onChange={(event) => setStartDate(event.target.value)}
-                color={startDate ? 'success' : undefined}
-                focused={startDate ? true : undefined}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                required
-                type="datetime-local"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                id="endDate"
-                label="Début :"
-                name="endDate"
-                value={endDate}
-                min={startDate}
-                onChange={(event) => setEndDate(event.target.value)}
-                color={endDate ? 'success' : undefined}
-                focused={endDate ? true : undefined}
-              />
-            </Grid>
-          </Grid>
-          <Grid item xs="auto">
-          </Grid>
-          <Grid item xs={12}>
-            <input type="hidden" name="risks" value={newRisks.join("-")} />
-            <Accordion >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>
-                  Risks
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails sx={{display: "flex", flexDirection: "column", gap: "1rem"}}>
-                <FormControl fullWidth>
-                  <InputLabel htmlFor="risks">Risques</InputLabel>
-                  <Select
-                    id="risks"
-                    multiple
-                    value={newRisks}
-                    label="Risques"
-                    onChange={(event) => setNewRisks(event.target.value)}
-                    renderValue={(selected) =>
-                      <Stack
-                        direction="row"
-                        spacing={0.5}
-                        useFlexGap
-                        flexWrap="wrap"
-                      >
-                        {selected.map(id => {
-                          const selectedRisk = risks.find(risk => risk.id === id);
-                          return (
-                            <Chip key={id} label={selectedRisk.name} />
-                          );
-                        })}
-                      </Stack>
-                    }
-                  >
-                    {risks?.map(risk =>
-                      <MenuItem key={risk.id} value={risk.id}>
-                        <Checkbox checked={newRisks.includes(risk.id)} />
-                        <ListItemText primary={risk.name} />
-                      </MenuItem>
-                    )}
-                  </Select>
-                </FormControl>
-                <TextField
-                  multiline
-                  maxRows={4}
-                  fullWidth
-                  id="otherRisk"
-                  label="Autres risques"
-                  name="otherRisk"
-                  value={otherRisk}
-                  onChange={(event) => setOtherRisk(event.target.value)}
-                  error={Boolean(otherRisk && otherRiskError)}
-                  helperText={otherRisk && otherRiskError ? otherRiskError: undefined}
-                  color={otherRisk && !otherRiskError ? 'success' : undefined}
-                  focused={otherRisk && !otherRiskError ? true : undefined}
-                />
-              </AccordionDetails>
-            </Accordion>
-          </Grid> */}
-        </Grid>
+        {/* Menu contenant les boutons de retour et d'envoi du formulaire. */}
         <Stack
           direction="row"
           spacing={1}

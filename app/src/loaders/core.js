@@ -22,7 +22,7 @@ export default class Core {
     );
 
     return results
-      .map((result, index) => [this.getList[index][1], result])
+      .map((result, index) => [getList[index][1], result])
       .reduce((previousValue, [key, value]) => {
         const newResult = previousValue;
         newResult[key] = value;

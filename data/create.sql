@@ -53,6 +53,7 @@ CREATE TABLE "fournisseur"(
 CREATE TABLE "achat_en_tete"(
   "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "fournisseur_id" int NOT NULL REFERENCES "fournisseur"("id"),
+  "statut" boolean NOT NULL DEFAULT false,
   "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "creation_by" text NOT NULL DEFAULT 'admin'
 );
@@ -62,6 +63,10 @@ CREATE TABLE "achat_ligne"(
   "achat_en_tete_id" int NOT NULL REFERENCES "achat_en_tete"("id"),
   "article_id" int NOT NULL REFERENCES "article"("id"),
   "quantite_commande" int NOT NULL,
+  "quantite_reception" int,
+  "unite_commande" text NOT NULL,
+  "delai_demande" TIMESTAMPTZ,
+  "delai_confirme" TIMESTAMPTZ,
   "statut" boolean NOT NULL DEFAULT false,
   "prix_unitaire" int NOT NULL,
   "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),

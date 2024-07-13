@@ -5,7 +5,7 @@ import datamappers from "../src/datamappers/index.js";
 
 // Génère 5 articles
 const articleList = faker.helpers.multiple(createRandomArticle, {
-  count: 5
+  count: 10
 });
 
 //Génère 20 emplacements
@@ -13,7 +13,7 @@ const emplacementList = faker.helpers.multiple(createRandomEmplacement, {
   count: 20
 });
 
-//Génère 5 emplacements
+//Génère 5 fournisseurs
 const fournisseurList = faker.helpers.multiple(createRandomFournisseur, {
   count: 5
 });
@@ -22,7 +22,7 @@ const fournisseurList = faker.helpers.multiple(createRandomFournisseur, {
 const createArticles = Promise.all(
   articleList.map(article =>
     new Promise(resolve => {
-      resolve(datamappers.Article.create(article))
+      resolve(datamappers.Article.create(article));
     })
   )
 );
@@ -31,7 +31,7 @@ const createArticles = Promise.all(
 const createEmplacements = Promise.all(
   emplacementList.map(emplacement =>
     new Promise(resolve => {
-      resolve(datamappers.Emplacement.create(emplacement))
+      resolve(datamappers.Emplacement.create(emplacement));
     })
   )
 );
@@ -39,7 +39,7 @@ const createEmplacements = Promise.all(
 const createFournisseur = Promise.all(
   fournisseurList.map(fournisseur =>
     new Promise(resolve => {
-      resolve(datamappers.Fournisseur.create(fournisseur))
+      resolve(datamappers.Fournisseur.create(fournisseur));
     })
   )
 );
@@ -49,7 +49,7 @@ const [articleListDB, emplacementListDB, fournisseurDB] = await Promise.all([
   createArticles,
   createEmplacements,
   createFournisseur
-])
+]);
 
 //Génère 100 stocks
 const stockList = faker.helpers.multiple(createRandomStock, {
@@ -60,7 +60,7 @@ const stockList = faker.helpers.multiple(createRandomStock, {
 await Promise.all(
   stockList.map(stock =>
     new Promise(resolve => {
-      resolve(datamappers.Stock.create(stock))
+      resolve(datamappers.Stock.create(stock));
     })
   )
 );
@@ -68,7 +68,7 @@ await Promise.all(
 // Fonction qui génère un article aléatoire
 function createRandomArticle() {
   return {
-    description: faker.lorem.sentence(),
+    description: faker.commerce.productName(),
     unite_de_stock: 0
   };
 }
@@ -76,7 +76,7 @@ function createRandomArticle() {
 // Fonction qui génère un Emplacement aléatoire
 function createRandomEmplacement() {
   return {
-    description: faker.lorem.sentence(),
+    description: faker.commerce.department(),
     statut_dispo: true
   };
 }
@@ -94,7 +94,7 @@ function createRandomStock() {
 // Fonction qui génère un fournisseur aléatoire
 function createRandomFournisseur() {
   return {
-    description: faker.lorem.sentence({max: 3})
+    description: faker.company.name()
   };
 }
 
