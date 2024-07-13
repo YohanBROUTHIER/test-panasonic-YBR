@@ -2,16 +2,13 @@
     "env": {
       "browser": true,
       "es6": true,
-      "node": true,
-      "mocha": true,
-      "jest/globals": true
+      "node": true
     },
     "parserOptions": {
       "ecmaVersion": 2022,
       "sourceType": "module"
     },
     "plugins": [
-      "jest",
       "react-refresh"
     ],
     "extends": [
@@ -23,14 +20,9 @@
     "rules": {
       "indent": ["error", 2],
       "semi": ["error", "always"],
-      "jest/no-disabled-tests": "warn",
-      "jest/no-focused-tests": "error",
-      "jest/no-identical-title": "error",
-      "jest/prefer-to-have-length": "warn",
-      "jest/valid-expect": "error",
       "react-refresh/only-export-components": [
         "warn",
-        { "allowConstantExport": true },
+        { "allowConstantExport": true }
       ]
     },
     "ignorePatterns": ["dist"],
