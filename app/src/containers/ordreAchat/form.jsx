@@ -1,16 +1,22 @@
 import { useRef, useState } from "react";
 import { Form, useActionData, useLoaderData, useNavigate, useSubmit } from "react-router-dom";
-import { Button, Container, Fab, FormControl, Grid, Input, InputBase, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
-import { Add as AddIcon, Edit as EditIcon, Done as DoneIcon, Close as CloseIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { Button, Container, Fab, FormControl, Input, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Add as AddIcon, Done as DoneIcon, Close as CloseIcon } from '@mui/icons-material';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from "dayjs";
 
-import { timeConvertor } from "../../utils/index.js";
-
+// Liste des colones pour les lignes d'achats.
+// Le format a respecté est [label, reqProperty, typeImput, loaderDataName]
 const achatLigneColumns = [
-  ["Descritpion", "article_id"],
-  ["Qte commandé", "quantite_commande"],
-  ["Qte receptionné", "quantite_reception"],
-  ["Unité", "unite_commande"],
-  ["Prix unitaire", "prix_unitaire"]
+  ["Descritpion", "article_id", "select", "articleList"],
+  ["Qte commandé", "quantite_commande", "number"],
+  ["Qte receptionné", "quantite_reception", "number"],
+  ["Unité", "unite_commande", "text"],
+  ["Delai demandé", "delai_demande", "date"],
+  ["Delai confirmé", "delai_confirme", "date"],
+  ["Prix unitaire", "prix_unitaire", "number"]
 ];
 
 export default function Event() {
@@ -22,14 +28,28 @@ export default function Event() {
 
   const { achat, fournisseurList, articleList } = loaderData;
 
+  const [fournisseur, setFournisseur] = useState(achat?.fournisseur.id || "");
   const [achatLigneRow, setAchatLigneRow] = useState(achat?.lignes || []);
 
-  console.log(achatLigneRow);
-
   function addNewLigne() {
-    const emptyLigne = achatLigneColumns.reduce((previousValue, [_, currentValue]) => {
+    const emptyLigne = achatLigneColumns.reduce((previousValue, [_, reqProperty, typeImput]) => {
       const newValue = {};
-      newValue[currentValue] = "";
+      let value;
+      switch (typeImput) {
+      case "number":
+        value = 0;
+        break;
+      case "date":
+        value = dayjs();
+        break;
+      
+      default:
+        value = "";
+        break;
+      }
+      newValue[reqProperty] = value;
+
+
       return {...previousValue, ...newValue};
     }, {});
     setAchatLigneRow([...achatLigneRow, emptyLigne]);
@@ -37,6 +57,7 @@ export default function Event() {
   function updateLigne(index, fieldName) {
     return (event) => {
       const updatedLigne = [...achatLigneRow];
+      console.dir(event);
       let value = event.target.value;
       if (fieldName !== "description" && fieldName !== "unite_commande") {
         value = Math.round(parseInt(value));
@@ -46,29 +67,33 @@ export default function Event() {
       }
 
       updatedLigne[index][fieldName] = value;
-      console.log(updatedLigne);
       setAchatLigneRow(updatedLigne);
     };
   }
 
+  const isSubmitable = !!fournisseur && achatLigneRow.length > 0 && !achatLigneRow.some(row => 
+    Object.values(row).some(cell => cell === '')
+  );
+
   return(
     <>
-      <Container component="main" maxWidth="md" sx={{mt: "4rem", ml: "auto", mr: "auto"}}>
+      <Container component="main" maxWidth="xl" sx={{mt: "4rem", ml: "auto", mr: "auto"}}>
         <Stack
           ref={formRef}
           component={Form}
           spacing={2}
           method={!achat ? "POST" : "PATCH"}
-          action={!achat ? -1 : `./${achat.id}`}
+          action={!achat ? "../" : `./${achat.id}`}
         >
           {/* L'element select du fournisseur. */}
-          <FormControl fullWidth required>
+          <FormControl required sx={{width: "min(100%, 30rem)", alignSelf: "center"}}>
             <InputLabel htmlFor="fournisseur">Fournisseur</InputLabel>
             <Select
               id="fournisseur"
               name="fournisseur_id"
               label="Fournisseur"
-              defaultValue=""
+              value={fournisseur}
+              onChange={(event) => setFournisseur(event.target.value)}
             >
               {fournisseurList?.map(fournisseur =>
                 <MenuItem key={fournisseur.id} value={fournisseur.id}>
@@ -79,52 +104,65 @@ export default function Event() {
           </FormControl>
           
           {/* Affiche la table des ligne d'achat. */}
-          <Table>
-            <TableHead>
-              <TableRow>
-                {achatLigneColumns.map(([columnName]) =>
-                  <TableCell key={columnName} >{columnName}</TableCell>
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {achatLigneRow.map((row, index) => (
-                <TableRow
-                  key={index}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  {achatLigneColumns.map(([label, propertyName]) => 
-                    <TableCell key={index + propertyName} >
-                      {propertyName === "article_id" ?
-                        <Select
-                          id={`${index}-${propertyName}`}
-                          name={propertyName}
-                          value={achatLigneRow[index][propertyName]}
-                          onChange={updateLigne(index, propertyName)}
-                          required
-                          fullWidth
-                          variant="standard"
-                        >
-                          {articleList.map(article =>
-                            <MenuItem key={article.id} value={article.id}>{article.description}</MenuItem>
-                          )}
-                        </Select>
-                        :
-                        <Input
-                          type={propertyName === "unite_commande" ? "text" : "number"}
-                          name={propertyName}
-                          value={achatLigneRow[index][propertyName]}
-                          onChange={updateLigne(index, propertyName)}
-                          fullWidth
-                          variant="standard"
-                        />
-                      }
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Paper sx={{overflowX: "auto"}}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {achatLigneColumns.map(([columnName]) =>
+                      <TableCell key={columnName} >{columnName}</TableCell>
+                    )}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {achatLigneRow.map((row, index) => (
+                    <TableRow
+                      key={index}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      {achatLigneColumns.map(([_, reqProperty, typeImput, loaderDataName]) => 
+                        <TableCell key={index + reqProperty} >
+                          {typeImput === "select" &&
+                            <Select
+                              id={`${index}-${reqProperty}`}
+                              name={reqProperty}
+                              value={achatLigneRow[index][reqProperty]}
+                              onChange={updateLigne(index, reqProperty)}
+                              required
+                              fullWidth
+                              variant="standard"
+                            >
+                              {loaderData[loaderDataName].map(item =>
+                                <MenuItem key={item.id} value={item.id}>{item.description}</MenuItem>
+                              )}
+                            </Select>
+                          }
+                          {typeImput === "date" &&
+                            <DatePicker
+                              slotProps={{textField: {variant: "standard"}}}
+                              value={achatLigneRow[index][reqProperty]}
+                              onChange={(value) => updateLigne(index, reqProperty)({target: {value}})}
+                              sx={{minWidth: "9.5rem"}}
+                            />
+                          }
+                          {typeImput !== "select" && typeImput !== "date" &&
+                            <Input
+                              type={typeImput}
+                              name={reqProperty}
+                              value={achatLigneRow[index][reqProperty]}
+                              onChange={updateLigne(index, reqProperty)}
+                              fullWidth
+                              variant="standard"
+                            />
+                          }
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </LocalizationProvider>
+          </Paper>
           <Button
             variant="contained"
             startIcon={<AddIcon/>}
@@ -146,10 +184,22 @@ export default function Event() {
             right: "1rem",
           }}
         >
-          <Fab size="small" color="primary" aria-label="Read mode" onClick={() => navigate(-1)} >
+          <Fab
+            size="small"
+            color="primary"
+            aria-label="Retour"
+            onClick={() => navigate(-1)}
+          >
             <CloseIcon />
           </Fab>
-          <Fab size="small" color="primary" aria-label="submit" type="submit" onClick={() => submit(formRef.current)} >
+          <Fab
+            size="small"
+            color="primary"
+            aria-label="submit"
+            type="submit"
+            onClick={() => submit(formRef.current)}
+            disabled={isSubmitable ? false : true}
+          >
             <DoneIcon />
           </Fab>
         </Stack>

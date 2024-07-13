@@ -63,7 +63,7 @@ CREATE TABLE "achat_ligne"(
   "achat_en_tete_id" int NOT NULL REFERENCES "achat_en_tete"("id"),
   "article_id" int NOT NULL REFERENCES "article"("id"),
   "quantite_commande" int NOT NULL,
-  "quantite_reception" int,
+  "quantite_reception" int NOT NULL DEFAULT 0,
   "unite_commande" text NOT NULL,
   "delai_demande" TIMESTAMPTZ,
   "delai_confirme" TIMESTAMPTZ,
