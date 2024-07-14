@@ -10,8 +10,13 @@ export default class AchatLigneSchema extends CoreSchema {
     unite_commande: Joi.string(),
     delai_demande: Joi.date(),
     delai_confirme: Joi.date(),
-    statut: Joi.boolean(),
+    statut_achat_id: Joi.number().integer().positive().required(),
     prix_unitaire: Joi.number().integer().required(),
     creation_by: Joi.string().pattern(new RegExp("^[a-zA-Z][\w -]{3,30}$"))
+  });
+  static updateBody = Joi.object({
+    quantite_reception: Joi.number().integer(),
+    delai_confirme: Joi.date(),
+    statut_achat_id: Joi.number().integer().positive()
   });
 }

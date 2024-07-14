@@ -8,7 +8,8 @@ export default class OrdreAchat extends Core{
   static defaultSort = "reception_date-asc";
   static otherGetOneList = [
     ["Fournisseur", "fournisseurList"],
-    ["Article", "articleList"]
+    ["Article", "articleList"],
+    ["StatutAchat", "statutList"]
   ];
   static otherGetManyList = [
     ["Fournisseur", "fournisseurs"],

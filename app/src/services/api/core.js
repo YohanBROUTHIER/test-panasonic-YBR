@@ -44,7 +44,6 @@ export default class CoreApi {
     const httpResponse = await fetch(`${apiBaseUrl}/${this.routeName}/${id}`, {
       method: "PATCH",
       headers: {"Content-Type": "application/json"},
-      mode: "cors",
       body: JSON.stringify(data)
     });
   

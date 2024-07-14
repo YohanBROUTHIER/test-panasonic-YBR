@@ -2,7 +2,7 @@ BEGIN;
 
 DROP VIEW IF EXISTS "emplacement_with_stock", "article_global_view", "achat";
 DROP TABLE IF EXISTS "emplacement", "article", "stock", "transaction",
-  "fournisseur", "achat_en_tete", "achat_ligne" CASCADE;
+  "fournisseur", "achat_en_tete", "achat_ligne", "statut_achat" CASCADE;
 
 ------------------------------------------ Primaries tables -------------------------------------------------------
 

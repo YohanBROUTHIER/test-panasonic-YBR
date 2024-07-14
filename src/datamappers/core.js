@@ -50,7 +50,7 @@ export default class CoreDatamapper {
         )
         RETURNING *;`,
       values: propertyList.map(([_,value]) => value)
-    }
+    };
 
     // Effectue la requête via le module PG
     const result = await pool.query(query);
@@ -58,6 +58,32 @@ export default class CoreDatamapper {
     return result.rows[0];
   }
 
+  // Permet d'effectuer un eregistrement dans la table.
+  static async update(id, data) {
+    // Converti un objet en array de tupples [key, value]
+    const propertyList = Object.entries(data);
+
+    // Construction de la requête préparé
+    const query ={
+      text: `
+        UPDATE ${this.WriteTableName} SET (
+          ${propertyList.map(([key,_]) => `"${key}"`).join(", ")}
+        ) = (
+          ${propertyList.map((_,index) => `$${index + 1}`).join(", ")}
+        )
+        WHERE id = ${id}
+        RETURNING *;`,
+      values: propertyList.map(([_,value]) => value)
+    };
+
+    // Effectue la requête via le module PG
+    const result = await pool.query(query);
+    
+    return result.rows[0];
+  }
+
+  // Ensemble de fonction qui permettent d'ajouter
+  // un where, order by, limit et offset a la requête.
   static addWhereToQuery(where, query) {
     let result = query;
     result.text += " WHERE ";

@@ -8,7 +8,7 @@ export default class CoreController {
   
   // Méthode pour la création d'un enregistrement
   static async create(req, res) {
-    await this.schema.createBody.validateAsync(req.body);
+    await eh(this.schema.createBody.validateAsync(req.body));
     const row = await this.datamapper.create(req.body);
     res.status(201).json(row);
   }
@@ -33,5 +33,25 @@ export default class CoreController {
     }
 
     return res.status(200).json(row);
+  }
+
+  static async update(req, res) {
+    const { id } = req.params;
+    this.schema.posInt(id);
+    await eh(this.schema.updateBody.validateAsync(req.body));
+
+    const row = await this.datamapper.update(id, req.body);
+
+    return res.status(200).json(row);
+  }
+}
+
+
+// Catch l'erreur de Joi et la converti en ApiError
+async function eh(schema) {
+  try {
+    await schema;
+  } catch (error) {
+    throw new ApiError(error.message, {httpStatus: 400});
   }
 }

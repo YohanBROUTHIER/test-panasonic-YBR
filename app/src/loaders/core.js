@@ -9,7 +9,7 @@ export default class Core {
   static defaultSort;
 
   static async one({params}) {
-    const getList = this.otherGetOneList;
+    const getList = [...this.otherGetOneList];
 
     if (params.id) {
       getList.push([this.apiName, this.resultName, params.id]);

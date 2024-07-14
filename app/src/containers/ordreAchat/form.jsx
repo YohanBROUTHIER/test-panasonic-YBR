@@ -17,25 +17,33 @@ const achatLigneColumns = [
   ["Unité", "unite_commande", "text"],
   ["Delai demandé", "delai_demande", "date"],
   ["Delai confirmé", "delai_confirme", "date"],
-  ["Prix unitaire", "prix_unitaire", "number"]
+  ["Prix unitaire", "prix_unitaire", "number"],
+  ["Statut", "statut_achat_id", "select", "statutList"]
 ];
 
-export default function Event() {
+
+// Composant react qui affiche le formulaire
+export default function AchatForm() {
   const submit = useSubmit();
   const navigate = useNavigate();
   const formRef = useRef();
   const loaderData = useLoaderData();
 
+  // Récupère les données du loader
   const { achat, fournisseurList } = loaderData;
-
+  console.log(achat)
+  // Déplace la position de l'id de l'article de chaque ligne pour automatisé
+  // la création de la table.
   const lignes = achat?.lignes.map(ligne => {
     ligne.article_id = ligne.article.id;
+    ligne.statut_achat_id = ligne.statut.id;
     return ligne;
   });
 
   const [fournisseur, setFournisseur] = useState(achat?.fournisseur.id || "");
   const [achatLigneRow, setAchatLigneRow] = useState(lignes || []);
 
+  // Fonction gérant la création de donné vie pour une nouvelle ligne
   function addNewLigne() {
     const emptyLigne = achatLigneColumns.reduce((previousValue, [_, reqProperty, typeImput]) => {
       const newValue = {};
@@ -56,6 +64,8 @@ export default function Event() {
     }, {});
     setAchatLigneRow([...achatLigneRow, emptyLigne]);
   }
+
+  // Fonction gérant la modifffication de tout les input controlé
   function updateLigne(index, fieldName) {
     return (event) => {
       const updatedLigne = [...achatLigneRow];
@@ -63,7 +73,7 @@ export default function Event() {
       let value = event.target.value;
       if (fieldName !== "description" && fieldName !== "unite_commande") {
         value = Math.round(parseInt(value));
-        if (isNaN(value)) {
+        if (isNaN(value) && value !== "") {
           return;
         }
       }
@@ -73,17 +83,20 @@ export default function Event() {
     };
   }
 
+  // Verifie si il y a un minimum de donné pour permettre l'envoi du formulaire.
+  // TODO: Créer des controles plus approfondie pour garantir que le formulaire est correct.
   const isSubmitable = !!fournisseur && achatLigneRow.length > 0 && !achatLigneRow.some(row => 
     Object.values(row).some(cell => cell === '')
   );
 
+  // Effectue l'envoi des donnés vers l'action
   function submitOnClick() {
     const formData = new FormData(formRef.current);
     const body = OrdreAchatAction.parseFormData(formData);
     body["lignes"] = achatLigneRow;
     submit(body, {
       method: !achat ? "POST" : "PATCH",
-      action: !achat ? "../" : `./${achat.id}`,
+      action: !achat ? "../" : undefined,
       encType: "application/json"
     });
   }
@@ -96,7 +109,7 @@ export default function Event() {
           component={Form}
           spacing={2}
           method={!achat ? "POST" : "PATCH"}
-          action={!achat ? "../" : `./${achat.id}`}
+          action={!achat ? "../" : undefined}
         >
           {/* L'element select du fournisseur. */}
           <FormControl required sx={{width: "min(100%, 30rem)", alignSelf: "center"}}>
@@ -107,6 +120,7 @@ export default function Event() {
               label="Fournisseur"
               value={fournisseur}
               onChange={(event) => setFournisseur(event.target.value)}
+              disabled={achat ? true : undefined}
             >
               {fournisseurList?.map(fournisseur =>
                 <MenuItem key={fournisseur.id} value={fournisseur.id}>
@@ -128,6 +142,7 @@ export default function Event() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {/* Boucle de création d'une ligne */}
                   {achatLigneRow.map((row, index) => (
                     <TableRow
                       key={index}
@@ -141,6 +156,7 @@ export default function Event() {
                               onChange={updateLigne(index, reqProperty)}
                               required
                               fullWidth
+                              disabled={achat && reqProperty !== "statut_achat_id" ? true : undefined}
                               variant="standard"
                             >
                               {loaderData[loaderDataName].map(item =>
@@ -153,6 +169,7 @@ export default function Event() {
                               slotProps={{textField: {variant: "standard"}}}
                               value={dayjs(achatLigneRow[index][reqProperty])}
                               onChange={(value) => updateLigne(index, reqProperty)({target: {value}})}
+                              disabled={achat && reqProperty !== "delai_confirme" ? true : undefined}
                               sx={{minWidth: "9.5rem"}}
                             />
                           }
@@ -163,6 +180,7 @@ export default function Event() {
                               onChange={updateLigne(index, reqProperty)}
                               fullWidth
                               variant="standard"
+                              disabled={achat && reqProperty !== "quantite_reception" ? true : undefined}
                             />
                           }
                         </TableCell>
@@ -173,14 +191,16 @@ export default function Event() {
               </Table>
             </LocalizationProvider>
           </Paper>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon/>}
-            onClick={addNewLigne}
-            sx={{width: "max-content", alignSelf: "center"}}
-          >
-            {"Ajouter une ligne"}
-          </Button>
+          {!achat &&
+            <Button
+              variant="contained"
+              startIcon={<AddIcon/>}
+              onClick={addNewLigne}
+              sx={{width: "max-content", alignSelf: "center"}}
+            >
+              {"Ajouter une ligne"}
+            </Button>
+          }
         </Stack>
 
         {/* Menu contenant les boutons de retour et d'envoi du formulaire. */}
