@@ -4,6 +4,7 @@ export default class AchatQueryMapper extends Core{
   static limitItemsPage = 20;
   static allSearchPrpoperty= [
     ["fournisseur", "description"],
+    ["statut", "description"],
     ["achat_en_tete", "creation_by"],
     ["article", "description"]
   ];

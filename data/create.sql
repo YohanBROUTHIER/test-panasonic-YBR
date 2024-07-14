@@ -50,10 +50,17 @@ CREATE TABLE "fournisseur"(
   "creation_by" text NOT NULL DEFAULT 'admin'
 );
 
+CREATE TABLE "statut_achat"(
+  "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "description" text NOT NULL,
+  "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
+  "creation_by" text NOT NULL DEFAULT 'admin'
+);
+
 CREATE TABLE "achat_en_tete"(
   "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "fournisseur_id" int NOT NULL REFERENCES "fournisseur"("id"),
-  "statut" boolean NOT NULL DEFAULT false,
+  "statut_achat_id" int NOT NULL REFERENCES "statut_achat"("id"),
   "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "creation_by" text NOT NULL DEFAULT 'admin'
 );
@@ -67,7 +74,7 @@ CREATE TABLE "achat_ligne"(
   "unite_commande" text NOT NULL,
   "delai_demande" TIMESTAMPTZ,
   "delai_confirme" TIMESTAMPTZ,
-  "statut" boolean NOT NULL DEFAULT false,
+  "statut_achat_id" int NOT NULL REFERENCES "statut_achat"("id"),
   "prix_unitaire" int NOT NULL,
   "creation_date" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "creation_by" text NOT NULL DEFAULT 'admin'
@@ -112,17 +119,20 @@ CREATE VIEW "achat" AS
       al."unite_commande",
       al."delai_demande",
       al."delai_confirme",
-      al."statut",
+      row_to_json(sa.*) as "statut",
       al."prix_unitaire",
       al."creation_date",
       al."creation_by"
     FROM "achat_ligne" AS al
     LEFT JOIN "article" AS a
     ON al.article_id = a.id
-    GROUP BY al.id, a.*
+    LEFT JOIN "statut_achat" AS sa
+    ON al.statut_achat_id = sa.id
+    GROUP BY al.id, a.*, sa.*
   )
 
-  SELECT aet."id", aet."statut", aet."creation_date", aet."creation_by",
+  SELECT aet."id", aet."creation_date", aet."creation_by",
+    row_to_json(sa.*) as "statut",
     row_to_json(f.*) AS "fournisseur",
     jsonb_agg(al) AS "lignes",
     sum(al.prix_unitaire * al.quantite_commande) AS "cout",
@@ -132,6 +142,8 @@ CREATE VIEW "achat" AS
   ON aet.id = al.achat_en_tete_id
   LEFT JOIN "fournisseur" AS f
   ON aet.fournisseur_id = f.id
-  GROUP BY aet.id, f.*;
+  LEFT JOIN "statut_achat" AS sa
+  ON aet.statut_achat_id = sa.id
+  GROUP BY aet.id, f.*, sa.*;
 
 COMMIT;

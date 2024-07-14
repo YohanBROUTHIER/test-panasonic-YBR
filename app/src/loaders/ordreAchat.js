@@ -10,5 +10,8 @@ export default class OrdreAchat extends Core{
     ["Fournisseur", "fournisseurList"],
     ["Article", "articleList"]
   ];
-  static otherGetManyList = [];
+  static otherGetManyList = [
+    ["Fournisseur", "fournisseurs"],
+    ["StatutAchat", "statutAchats"]
+  ];
 }

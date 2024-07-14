@@ -50,7 +50,7 @@ export default class CoreSchema {
       if (!condition.tableName.match(/^[a-z][a-z_]+$/)) {
         throw new ApiError(`Table's name is not valid`, {httpStatus:400});
       }
-      if (!condition.propertyName.match(/^[a-z][A-Za-z]+$/)) {
+      if (!condition.propertyName.match(/^[a-z][A-Za-z_]+$/)) {
         throw new ApiError(`field name is not valid`, {httpStatus:400});
       }
       if (!condition.operator.match(/^(=|!=|<|>|<=|>=|is|like|ilike)$/)) {

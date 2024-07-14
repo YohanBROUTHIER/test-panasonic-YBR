@@ -28,7 +28,7 @@ export default class AchatEnTeteDatamapper extends CoreDatamapper{
       return [result.text, result.values];
     }
 
-    if (tableName === "fournisseur") {
+    if (tableName === "fournisseur" || tableName === "statut") {
       result.values.push(value);
       result.text += `((${tableName}->>'${propertyName}')::${type} ${operator} $${result.values.length})`;
       return [result.text, result.values];

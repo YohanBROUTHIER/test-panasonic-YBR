@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, Link, Stack, Typography } from "@mui/mat
 
 import { ListPage } from "../../components/index.js";
 import SortModal from "./sortModal.jsx";
+import FilterModal from "./filterModal.jsx";
 import AchatEnTeteApi from "../../services/api/achatEnTete.js";
 import dayjs from "dayjs";
 import AchatQueryMapper from "../../utils/queryMapper/achat.js";
@@ -14,6 +15,7 @@ export default function Lists() {
       Api={AchatEnTeteApi}
       actionPath="/buy-order"
       SortModal={SortModal}
+      FilterModal={FilterModal}
       queryMapper={AchatQueryMapper}
     />
   );
@@ -40,11 +42,11 @@ function CardAchat(props) {
     >
       <CardHeader
         title={item.fournisseur?.description || "Aucun fournisseur"}
-        subheader={dayjs(item.creation_date).format("DD/MM/YYYY HH:MM")}
+        subheader={item.statut.description}
       />
       <CardContent>
         <Stack direction="row" justifyContent="space-between" flexWrap="wrap" rowGap={1}>
-          <Typography variant="body2" sx={{mr: "1rem"}}>{item.creation_by}</Typography>
+          <Typography variant="body2" sx={{mr: "1rem"}}>{dayjs(item.creation_date).format("DD/MM/YYYY HH:MM")}</Typography>
           <Typography variant="body2">{`Montant total: ${item.cout}€`}</Typography>
         </Stack>
       </CardContent>

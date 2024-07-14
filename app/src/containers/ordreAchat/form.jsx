@@ -28,7 +28,7 @@ export default function Event() {
 
   const { achat, fournisseurList } = loaderData;
 
-  const lignes = achat.lignes.map(ligne => {
+  const lignes = achat?.lignes.map(ligne => {
     ligne.article_id = ligne.article.id;
     return ligne;
   });

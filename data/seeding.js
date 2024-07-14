@@ -13,8 +13,13 @@ const emplacementList = faker.helpers.multiple(createRandomEmplacement, {
   count: 20
 });
 
-//Génère 5 fournisseurs
+//Génère 10 fournisseurs
 const fournisseurList = faker.helpers.multiple(createRandomFournisseur, {
+  count: 10
+});
+
+//Génère 5 status
+const statutAchatList = faker.helpers.multiple(createRandomStatutAchat, {
   count: 5
 });
 
@@ -36,6 +41,7 @@ const createEmplacements = Promise.all(
   )
 );
 
+// Creation d'une promesse qui sera résolu si tout les fournisseurs sont crée
 const createFournisseur = Promise.all(
   fournisseurList.map(fournisseur =>
     new Promise(resolve => {
@@ -44,11 +50,21 @@ const createFournisseur = Promise.all(
   )
 );
 
-// Parallèlise la créastion des articles et des emplacements
-const [articleListDB, emplacementListDB, fournisseurDB] = await Promise.all([
+// Creation d'une promesse qui sera résolu si tout les statut sont crée
+const createStatutAchatList = Promise.all(
+  statutAchatList.map(statutAchat =>
+    new Promise(resolve => {
+      resolve(datamappers.StatutAchat.create(statutAchat));
+    })
+  )
+);
+
+// Attent les réponse des promesses précédement créer
+const [articleListDB, emplacementListDB, fournisseurDB, statutAchatDB] = await Promise.all([
   createArticles,
   createEmplacements,
-  createFournisseur
+  createFournisseur,
+  createStatutAchatList
 ]);
 
 //Génère 100 stocks
@@ -133,9 +149,17 @@ function createRandomFournisseur() {
   };
 }
 
+// Fonction qui génère un achat statut aléatoire
+function createRandomStatutAchat() {
+  return {
+    description: faker.company.buzzVerb()
+  };
+}
+
 // Fonction qui génère un achat aléatoire
 function createRandomAchatEnTete() {
   return {
+    statut_achat_id: getRandomElement(statutAchatDB).id,
     fournisseur_id: getRandomElement(fournisseurDB).id,
     creation_date: faker.date.between({from:"2024-01-01", to:"2025-01-01"})
   };
@@ -158,6 +182,7 @@ function createRandomAchatLigne(achat_en_tete_id, creation_date) {
     const delai_demande = faker.date.soon({days: 30, refDate: creation_date});
     const delai_confirme = faker.date.soon({days: 8, refDate: delai_demande});
   
+    const statut_achat_id = getRandomElement(statutAchatDB).id
     const prix_unitaire = getRandomInt(4, 80);
   
     return {
@@ -168,6 +193,7 @@ function createRandomAchatLigne(achat_en_tete_id, creation_date) {
       unite_commande,
       delai_demande,
       delai_confirme,
+      statut_achat_id,
       prix_unitaire,
       creation_date
     };
