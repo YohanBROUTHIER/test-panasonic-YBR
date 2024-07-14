@@ -15,7 +15,7 @@
     "dev:front": "vite ./app",
     "build": "vite build --emptyOutDir ./app",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:exercice1": "npm run db:reset && node ./test/exercice1"
+    "test:exercice1": "node ./test/exercice1"
   },
   "keywords": [],
   "author": "",

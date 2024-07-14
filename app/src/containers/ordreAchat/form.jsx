@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Form, useActionData, useLoaderData, useNavigate, useSubmit } from "react-router-dom";
+import { Form, useLoaderData, useNavigate, useSubmit } from "react-router-dom";
 import { Button, Container, Fab, FormControl, Input, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import { Add as AddIcon, Done as DoneIcon, Close as CloseIcon } from '@mui/icons-material';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -24,10 +24,11 @@ export default function Event() {
   const submit = useSubmit();
   const navigate = useNavigate();
   const formRef = useRef();
-  const actionData = useActionData();
   const loaderData = useLoaderData();
 
-  const { achat, fournisseurList, articleList } = loaderData;
+  const { achat, fournisseurList } = loaderData;
+
+  console.log(achat);
 
   const [fournisseur, setFournisseur] = useState(achat?.fournisseur.id || "");
   const [achatLigneRow, setAchatLigneRow] = useState(achat?.lignes || []);
@@ -40,9 +41,9 @@ export default function Event() {
       case "number":
         value = 0;
         break;
-      case "date":
-        value = dayjs();
-        break;
+      // case "date":
+      //   value = dayjs();
+      //   break;
       
       default:
         value = "";
@@ -150,7 +151,7 @@ export default function Event() {
                           {typeImput === "date" &&
                             <DatePicker
                               slotProps={{textField: {variant: "standard"}}}
-                              value={achatLigneRow[index][reqProperty]}
+                              value={dayjs(achatLigneRow[index][reqProperty])}
                               onChange={(value) => updateLigne(index, reqProperty)({target: {value}})}
                               sx={{minWidth: "9.5rem"}}
                             />

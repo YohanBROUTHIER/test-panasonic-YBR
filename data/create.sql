@@ -1,6 +1,6 @@
 BEGIN;
 
-DROP VIEW IF EXISTS "emplacement_with_stock", "article_global_view";
+DROP VIEW IF EXISTS "emplacement_with_stock", "article_global_view", "achat";
 DROP TABLE IF EXISTS "emplacement", "article", "stock", "transaction",
   "fournisseur", "achat_en_tete", "achat_ligne" CASCADE;
 
@@ -100,5 +100,17 @@ CREATE VIEW "article_global_view" AS
   ON a.id = ss.article_id
   LEFT JOIN "transaction_sum" AS ts
   ON a.id = ts.article_id;
+
+CREATE VIEW "achat" AS
+  SELECT aet."id", aet."statut", aet."creation_date", aet."creation_by",
+    row_to_json(f.*) AS "fournisseur",
+    jsonb_agg(al) AS "lignes",
+    sum(al.prix_unitaire * al.quantite_commande) AS "cout"
+  FROM "achat_en_tete" AS aet
+  LEFT JOIN "achat_ligne" AS al
+  ON aet.id = al.achat_en_tete_id
+  LEFT JOIN "fournisseur" AS f
+  ON aet.fournisseur_id = f.id
+  GROUP BY aet.id, f.*;
 
 COMMIT;

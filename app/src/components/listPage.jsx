@@ -18,13 +18,13 @@ export default function Lists(props) {
   const [items, setItems] = useState(loaderData[loaderDataName]);
   const [page, setPage] = useState(1);
   const [pageEnd, setPageEnd] = useState(loaderData[loaderDataName]?.length < maxItemsPage);
-
+  
   const url = new URL(window.location);
 
   useEffect(()=> {
     setItems(loaderData[loaderDataName]);
     setPage(1);
-    setPageEnd(false);
+    setPageEnd(loaderData[loaderDataName]?.length < maxItemsPage);
   }, [loaderData[loaderDataName]]);
 
   useEffect(() => {

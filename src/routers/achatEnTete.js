@@ -9,8 +9,8 @@ router.route("/")
   .get(eh(AchatEnTeteController.getAll.bind(AchatEnTeteController)))
   .post(eh(AchatEnTeteController.create.bind(AchatEnTeteController)));
 
-// router.route("/:id")
-//   .get(eh(AchatEnTeteController.getByPk.bind(AchatEnTeteController)))
+router.route("/:id")
+  .get(eh(AchatEnTeteController.getByPk.bind(AchatEnTeteController)));
 //   .patch(eh(AchatEnTeteController.update.bind(AchatEnTeteController)))
 //   .delete(eh(AchatEnTeteController.delete.bind(AchatEnTeteController)));
 
