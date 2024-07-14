@@ -1,24 +1,27 @@
-import { Box, Card, CardContent, CardHeader, Link, Stack, Typography } from "@mui/material";
+import { Card, CardContent, CardHeader, Link, Stack, Typography } from "@mui/material";
 
-import { ListPage} from "../../components/index.js";
+import { ListPage } from "../../components/index.js";
+import SortModal from "./sortModal.jsx";
 import AchatEnTeteApi from "../../services/api/achatEnTete.js";
 import dayjs from "dayjs";
+import AchatQueryMapper from "../../utils/queryMapper/achat.js";
 
 export default function Lists() {
   return (
     <ListPage
       CardItem={CardAchat}
       loaderDataName="achat"
-      maxItemsPage={30}
       Api={AchatEnTeteApi}
       actionPath="/buy-order"
+      SortModal={SortModal}
+      queryMapper={AchatQueryMapper}
     />
   );
 }
 
 function CardAchat(props) {
   const {item, ...otherProps} = props;
-  console.log(item)
+
   return (
     <Card
       {...otherProps}
@@ -42,7 +45,7 @@ function CardAchat(props) {
       <CardContent>
         <Stack direction="row" justifyContent="space-between" flexWrap="wrap" rowGap={1}>
           <Typography variant="body2" sx={{mr: "1rem"}}>{item.creation_by}</Typography>
-          <Typography variant="body2">{"Montant total: " + item.cout}</Typography>
+          <Typography variant="body2">{`Montant total: ${item.cout}€`}</Typography>
         </Stack>
       </CardContent>
     </Card>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLoaderData, useSearchParams } from "react-router-dom";
-import { Badge, Container, IconButton, Paper, Stack, Typography } from "@mui/material";
+import { Badge, IconButton, Paper, Stack, Typography } from "@mui/material";
 import {
   Delete as DeleteIcon, FilterAlt as FilterIcon, Sort as SortIcon,
   LibraryAdd as AddIcon, Done as DoneIcon, Close as CloseIcon
@@ -8,7 +8,7 @@ import {
 
 import { SearchBar } from "./index.js";
 
-export default function SearchForm({addItem, deleteModeList, setDeleteModeList, deleteSubmit, setOpenedModal, filterQuantity = 0}) {
+export default function SearchForm({addItem, deleteModeList, setDeleteModeList, deleteSubmit, setOpenedModal, filterQuantity = 0, isSortable, isFilterable, isDeletable}) {
   const loaderData = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -61,14 +61,18 @@ export default function SearchForm({addItem, deleteModeList, setDeleteModeList, 
         />
         {setOpenedModal &&
           <>
-            <IconButton aria-label="trie" onClick={() => setOpenedModal("sort")}>
-              <SortIcon />
-            </IconButton>
-            <IconButton aria-label="filtre" onClick={() => setOpenedModal("filter")}>
-              <Badge badgeContent={filterQuantity} color="secondary">
-                <FilterIcon />
-              </Badge>
-            </IconButton>
+            {isSortable &&
+              <IconButton aria-label="trie" onClick={() => setOpenedModal("sort")}>
+                <SortIcon />
+              </IconButton>
+            }
+            {isFilterable &&
+              <IconButton aria-label="filtre" onClick={() => setOpenedModal("filter")}>
+                <Badge badgeContent={filterQuantity} color="secondary">
+                  <FilterIcon />
+                </Badge>
+              </IconButton>
+            }
           </>
         }
       </Stack>
@@ -105,7 +109,7 @@ export default function SearchForm({addItem, deleteModeList, setDeleteModeList, 
             <IconButton aria-label="ajouter" onClick={addItem}>
               <AddIcon />
             </IconButton>
-            {setDeleteModeList &&
+            {setDeleteModeList && isDeletable &&
             <IconButton aria-label="supprimer" onClick={toggleDeletemodeList}>
               <DeleteIcon />
             </IconButton>

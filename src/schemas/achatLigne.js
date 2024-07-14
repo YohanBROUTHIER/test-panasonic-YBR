@@ -1,6 +1,7 @@
 import Joi from 'joi';
+import CoreSchema from './core.js';
 
-export default class AchatLigneSchema {
+export default class AchatLigneSchema extends CoreSchema {
   static createBody = Joi.object({
     achat_en_tete_id: Joi.number().integer().positive().required(),
     article_id: Joi.number().integer().positive().required(),

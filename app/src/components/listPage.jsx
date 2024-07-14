@@ -4,9 +4,10 @@ import { Alert, Box, CircularProgress, Grid, IconButton, Stack, Typography } fro
 import { RemoveCircle as RemoveCircleIcon, Cancel as CancelIcon } from "@mui/icons-material";
 
 import { SearchForm } from "../components/index.js";
+import { apiBaseUrl } from "../services/config.js";
 
 export default function Lists(props) {
-  const { CardItem, loaderDataName, maxItemsPage, SortModal=null, FilterModal=null, Api, actionPath } = props;
+  const { CardItem, loaderDataName, SortModal=null, FilterModal=null, Api, actionPath, queryMapper } = props;
 
   const navigate = useNavigate();
   const fetcher = useFetcher();
@@ -17,15 +18,25 @@ export default function Lists(props) {
   const [deleteModeList, setDeleteModeList] = useState(false);
   const [items, setItems] = useState(loaderData[loaderDataName]);
   const [page, setPage] = useState(1);
-  const [pageEnd, setPageEnd] = useState(loaderData[loaderDataName]?.length < maxItemsPage);
+  const [pageEnd, setPageEnd] = useState(loaderData[loaderDataName]?.length < queryMapper.limitItemsPage);
   
   const url = new URL(window.location);
+
+  useEffect(() => {
+    const newItems = fetcher.data;
+    if (!newItems) {
+      return;
+    }
+
+    setItems([...items, ...newItems[loaderDataName]]);
+    setPageEnd(newItems[loaderDataName].length < queryMapper.limitItemsPage);
+  },[fetcher.data]);
 
   useEffect(()=> {
     setItems(loaderData[loaderDataName]);
     setPage(1);
-    setPageEnd(loaderData[loaderDataName]?.length < maxItemsPage);
-  }, [loaderData[loaderDataName]]);
+    setPageEnd(loaderData[loaderDataName]?.length < queryMapper.limitItemsPage);
+  }, [searchParams]);
 
   useEffect(() => {
     if (pageEnd) {
@@ -35,23 +46,16 @@ export default function Lists(props) {
       const scrollingElement = event.target.scrollingElement;
       const maxScroll = scrollingElement.scrollHeight - scrollingElement.clientHeight;
       const scrollPosition = scrollingElement.scrollTop;
-
-      if (maxScroll - 400 > scrollPosition) {
+      
+      if (maxScroll - 400 > scrollPosition || fetcher.state !== "idle") {
         return;
       }
 
       const params = new URLSearchParams(url.search);
       params.set("page", page + 1);
-      const urlLimited = new URL(url.href.split("?")[0] + "?" + params.toString());
-
-      // const query = queryMapper.events(urlLimited);
-      const query = "";
-
-      const newEvents = await Api.getAll(query);
-      setItems([...items, ...newEvents]);
       setPage(page + 1);
-      setPageEnd(newEvents.length < maxItemsPage);
-
+      const urlLimited = new URL(url.href.split("?")[0] + "?" + params.toString());
+      fetcher.load(urlLimited.pathname + urlLimited.search);
       window.removeEventListener("scroll", loadNextPage);
     }
 
@@ -89,6 +93,7 @@ export default function Lists(props) {
     <>
       <Box component="main" >
         <SearchForm
+          isSortable={!!SortModal}
           isFilterable={!!FilterModal}
           {...{deleteModeList, setDeleteModeList, setOpenedModal, filterQuantity}}
           addItem={() => navigate(`${actionPath}/new`)}

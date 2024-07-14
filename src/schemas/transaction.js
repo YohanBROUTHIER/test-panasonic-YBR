@@ -1,6 +1,7 @@
 import Joi from 'joi';
+import CoreSchema from './core.js';
 
-export default class TransactionSchema {
+export default class TransactionSchema extends CoreSchema {
   static createBody = Joi.object({
     articleId: Joi.number().integer().positive().required(),
     typeMvt: Joi.number().integer().positive().required(),

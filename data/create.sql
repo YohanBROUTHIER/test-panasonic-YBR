@@ -102,12 +102,33 @@ CREATE VIEW "article_global_view" AS
   ON a.id = ts.article_id;
 
 CREATE VIEW "achat" AS
+  WITH lines AS (
+    SELECT
+      al."id",
+      al."achat_en_tete_id",
+      row_to_json(a.*) as "article",
+      al."quantite_commande",
+      al."quantite_reception",
+      al."unite_commande",
+      al."delai_demande",
+      al."delai_confirme",
+      al."statut",
+      al."prix_unitaire",
+      al."creation_date",
+      al."creation_by"
+    FROM "achat_ligne" AS al
+    LEFT JOIN "article" AS a
+    ON al.article_id = a.id
+    GROUP BY al.id, a.*
+  )
+
   SELECT aet."id", aet."statut", aet."creation_date", aet."creation_by",
     row_to_json(f.*) AS "fournisseur",
     jsonb_agg(al) AS "lignes",
-    sum(al.prix_unitaire * al.quantite_commande) AS "cout"
+    sum(al.prix_unitaire * al.quantite_commande) AS "cout",
+    max(COALESCE(al.delai_confirme, al.delai_demande)) AS "reception_date"
   FROM "achat_en_tete" AS aet
-  LEFT JOIN "achat_ligne" AS al
+  LEFT JOIN "lines" AS al
   ON aet.id = al.achat_en_tete_id
   LEFT JOIN "fournisseur" AS f
   ON aet.fournisseur_id = f.id

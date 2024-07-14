@@ -15,7 +15,8 @@ export default class CoreController {
   
   // Méthode pour obtenir tout les élément d'une table
   static async getAll(req, res) {
-    const rows = await this.datamapper.findAll();
+    this.schema.checkQueryForGet(req.query);
+    const rows = await this.datamapper.findAll(req.query);
     res.status(200).json(rows);
   }
 

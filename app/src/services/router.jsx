@@ -17,12 +17,9 @@ export default createBrowserRouter([
     element: <App />,
     // errorElement: <Error404 />,
     children: [
+      { path: "buy-order", element: <ordreAchat.List />, loader: eh(loaders.OrdreAchat.many.bind(loaders.OrdreAchat)) },
       { path: "buy-order", action: eh(actions.OrdreAchat.many.bind(actions.OrdreAchat)), children: [
         {
-          index: true,
-          element: <ordreAchat.List />,
-          loader: eh(loaders.OrdreAchat.many.bind(loaders.OrdreAchat))
-        }, {
           path: "new",
           element: <ordreAchat.Form />,
           loader: eh(loaders.OrdreAchat.one.bind(loaders.OrdreAchat))

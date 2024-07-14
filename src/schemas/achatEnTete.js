@@ -1,6 +1,7 @@
 import Joi from 'joi';
+import CoreSchema from './core.js';
 
-export default class AchatEnTeteSchema {
+export default class AchatEnTeteSchema extends CoreSchema {
   static createBody = Joi.object({
     fournisseur_id: Joi.number().integer().positive().required(),
     statut: Joi.boolean(),

@@ -5,6 +5,8 @@ export default class Core {
   static resultName;
   static otherGetOneList = [];
   static otherGetManyList = [];
+  static queryMapper;
+  static defaultSort;
 
   static async one({params}) {
     const getList = this.otherGetOneList;
@@ -30,12 +32,23 @@ export default class Core {
       }, {});
   }
 
-  static async many() {
-    const getList = [[this.apiName, this.resultName], ...this.otherGetManyList];
+  static async many({request}) {
+    const url = new URL(request.url);
+    const params = new URLSearchParams(url.search);
+    if (!params.get("page")) {
+      params.set("page", 1);
+    }
+    if (this.defaultSort && !params.get("order")) {
+      params.set("order",this.defaultSort);
+    }
+    const urlLimited = new URL(url.href.split("?")[0] + "?" + params.toString());
+    const query = this.queryMapper.advancedParser(urlLimited);
+
+    const getList = [[this.apiName, this.resultName, query], ...this.otherGetManyList];
 
     const results = await Promise.all(
-      getList.map(([apiName, _]) =>
-        new Promise((resolve) => resolve(api[apiName].getAll()))
+      getList.map(([apiName, _, queryString]) =>
+        new Promise((resolve) => resolve(api[apiName].getAll(queryString)))
       )
     );
 

@@ -75,7 +75,7 @@ const createAchat = Promise.all(
     new Promise(resolve => {
       resolve(datamappers.AchatEnTete.create(achatEnTete));
     }).then(achatEnTeteDB => {
-      const achatLigneList = faker.helpers.multiple(createRandomAchatLigne(achatEnTeteDB.id), {
+      const achatLigneList = faker.helpers.multiple(createRandomAchatLigne(achatEnTeteDB.id, achatEnTeteDB.creation_date), {
         count: {
           min: 1,
           max: 6
@@ -136,12 +136,13 @@ function createRandomFournisseur() {
 // Fonction qui génère un achat aléatoire
 function createRandomAchatEnTete() {
   return {
-    fournisseur_id: getRandomElement(fournisseurDB).id
+    fournisseur_id: getRandomElement(fournisseurDB).id,
+    creation_date: faker.date.between({from:"2024-01-01", to:"2025-01-01"})
   };
 }
 
 // Fonction qui génère un achat aléatoire
-function createRandomAchatLigne(achat_en_tete_id) {
+function createRandomAchatLigne(achat_en_tete_id, creation_date) {
   return () => {
     const article_id = getRandomElement(articleListDB).id;
     const quantite_commande = getRandomInt(1, 20);
@@ -154,7 +155,6 @@ function createRandomAchatLigne(achat_en_tete_id) {
       "big bag"
     ]);
   
-    const creation_date = faker.date.between({from:"2024-01-01", to:"2025-01-01"});
     const delai_demande = faker.date.soon({days: 30, refDate: creation_date});
     const delai_confirme = faker.date.soon({days: 8, refDate: delai_demande});
   

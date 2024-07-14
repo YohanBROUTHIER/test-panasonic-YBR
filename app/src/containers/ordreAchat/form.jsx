@@ -28,10 +28,13 @@ export default function Event() {
 
   const { achat, fournisseurList } = loaderData;
 
-  console.log(achat);
+  const lignes = achat.lignes.map(ligne => {
+    ligne.article_id = ligne.article.id;
+    return ligne;
+  });
 
   const [fournisseur, setFournisseur] = useState(achat?.fournisseur.id || "");
-  const [achatLigneRow, setAchatLigneRow] = useState(achat?.lignes || []);
+  const [achatLigneRow, setAchatLigneRow] = useState(lignes || []);
 
   function addNewLigne() {
     const emptyLigne = achatLigneColumns.reduce((previousValue, [_, reqProperty, typeImput]) => {
@@ -41,9 +44,6 @@ export default function Event() {
       case "number":
         value = 0;
         break;
-      // case "date":
-      //   value = dayjs();
-      //   break;
       
       default:
         value = "";
