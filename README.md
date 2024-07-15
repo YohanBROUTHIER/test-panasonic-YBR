@@ -14,7 +14,7 @@ npm init
 npm i
 
 ### Variable d'environnement
-Créer un fichier .env à la racine du projet respectant les informations contenu dans le fichier .env.
+Créer un fichier .env à la racine du projet respectant les informations contenu dans le fichier .env.exemple.
 
 ### Creation des tables
 npm run db:create
