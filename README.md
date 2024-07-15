@@ -13,6 +13,9 @@ Effectué les commande suivantes dans le TERMINAL :
 npm init
 npm i
 
+### Variable d'environnement
+Créer un fichier .env à la racine du projet respectant les informations contenu dans le fichier .env.
+
 ### Creation des tables
 npm run db:create
 
@@ -24,3 +27,6 @@ npm run test:exercice1
 
 ### Lance le serveur avec rechargement à chaud
 npm run dev:back
+
+### Lance le serveur avec rechargement à chaud
+npm run dev:front
